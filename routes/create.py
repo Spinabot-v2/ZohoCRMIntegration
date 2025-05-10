@@ -1,0 +1,80 @@
+from flask import Blueprint, request, jsonify
+import requests
+from token_handler.tokens import fetch_tokens
+from database.insert_data_db import insert_audit_data
+from utils.extension import limiter
+create_blueprint = Blueprint("create", __name__)
+
+@create_blueprint.route("/<int:remodel_id>/leads", methods=["POST"])
+@limiter.limit("5 per minute")
+def create_lead(remodel_id):
+    try:
+        ZOHO_MODULE = "Leads"
+        ZOHO_API_URL = f"https://www.zohoapis.com/crm/v8/{ZOHO_MODULE}"
+
+        try:
+            request_body = request.get_json(force=True)
+        except Exception:
+            return jsonify({"error": "Invalid JSON body"}), 400
+
+        leads = request_body.get("data", [])
+        layout_id = request_body.get("layout_id")  # optional
+
+        if not leads:
+            return jsonify({"error": "No leads provided"}), 400
+
+        try:
+            token = fetch_tokens(remodel_id)
+            if "error" in token:
+                return jsonify(token), 401
+            access_token = token.get("access_token")
+            if not access_token:
+                return jsonify({"error": "Invalid or missing access token"}), 401
+        except Exception as e:
+            return jsonify({"error": "Failed to fetch token", "details": str(e)}), 500
+
+        processed_leads = []
+        for lead in leads:
+            required_fields = ["First_Name", "Last_Name", "Company", "Email", "Phone"]# this is compulsary to this is a check point
+            missing_fields = [field for field in required_fields if not lead.get(field)]
+            if missing_fields:
+                return jsonify({"error": f"Each lead must include {', '.join(missing_fields)}"}), 400
+
+            if layout_id:
+                lead["Layout"] = {"id": layout_id}
+
+            clean_lead = {k: v for k, v in lead.items() if v is not None}
+            processed_leads.append(clean_lead)
+
+        payload = {
+            "data": processed_leads,
+            "trigger": ["workflow", "approval"]
+        }
+
+        headers = {
+            "Authorization": f"Zoho-oauthtoken {access_token}",
+            "Content-Type": "application/json"
+        }
+
+        try:
+            response = requests.post(ZOHO_API_URL, json=payload, headers=headers)
+        except requests.RequestException as e:
+            return jsonify({"error": "Request to Zoho failed", "details": str(e)}), 502
+
+        try:
+            response_data = response.json()
+        except ValueError:
+            return jsonify({"error": "Invalid JSON response from Zoho"}), 502
+
+        if response.status_code in [200, 201]:#success 
+            insert_audit_data(remodel_id,response.json(),mode="create")
+            return jsonify(response_data), response.status_code
+        else:
+            return jsonify({
+                "error": "Zoho API request failed",
+                "status_code": response.status_code,
+                "details": response_data
+            }), response.status_code
+
+    except Exception as e:
+        return jsonify({"error": "Server error", "details": str(e)}), 500

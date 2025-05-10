@@ -1,0 +1,68 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Your API Title",
+    "description": "Your API Description",
+    "version": "1.0.0"
+  },
+  "basePath": "/api",
+  "schemes": ["http", "https"],
+  "definitions": {
+    "Lead": {
+      "type": "object",
+      "properties": {
+        "First_Name": {
+          "type": "string",
+          "description": "First name of the lead"
+        },
+        "Last_Name": {
+          "type": "string",
+          "description": "Last name of the lead"
+        },
+        "Email": {
+          "type": "string",
+          "format": "email",
+          "description": "Email address of the lead"
+        },
+        "Phone": {
+          "type": "string",
+          "description": "Phone number of the lead"
+        },
+        "Description": {
+          "type": "string",
+          "description": "Additional description or notes"
+        }
+      },
+      "required": ["Last_Name", "Email"]
+    },
+    "LeadResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "ID of the created lead"
+              },
+              "status": {
+                "type": "string",
+                "description": "Status of the lead creation"
+              }
+            }
+          }
+        },
+        "message": {
+          "type": "string",
+          "description": "Response message"
+        },
+        "status": {
+          "type": "boolean",
+          "description": "Overall status of the operation"
+        }
+      }
+    }
+  }
+}
