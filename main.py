@@ -8,6 +8,7 @@ import requests
 from datetime import timedelta
 import json
 import time 
+from flasgger import Swagger  # Import Swagger
 
 #blueprints
 from routes.clients import clients_blueprint
@@ -32,6 +33,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize db with app
 db.init_app(app)
+
+# Initialize Swagger
+swagger = Swagger(app)
+
 #register the apps
 app.register_blueprint(auth_test, url_prefix="/api/zoho")
 app.register_blueprint(clients_blueprint, url_prefix="/api/clients")

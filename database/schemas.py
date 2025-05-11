@@ -25,7 +25,8 @@ class Clients(db.Model):
 
 class ZohoAudit(db.Model):
     __tablename__ = "audit"
-    lead_id = Column(String,primary_key=True)  
+    id = Column(Integer, primary_key=True,autoincrement=True)
+    lead_id = Column(String)
     remodel_id = Column(Integer)
     zoho_id = Column(String, ForeignKey("clients.zoho_id", ondelete="CASCADE"))
     name = Column(String)

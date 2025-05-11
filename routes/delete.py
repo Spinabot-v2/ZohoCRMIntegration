@@ -8,7 +8,35 @@ delete_blueprint = Blueprint("delete", __name__)
 @delete_blueprint.route("/<int:remodel_id>/leads", methods=['DELETE'])
 @limiter.limit("5 per minute")
 def delete_clients(remodel_id):
-    print("Deleting Clients")
+    """
+    Delete Leads in Zoho CRM.
+
+    ---
+    tags:
+      - Leads
+    parameters:
+      - in: path
+        name: remodel_id
+        required: true
+        schema:
+          type: integer
+        description: The ID of the remodel project.
+      - in: query
+        name: ids
+        required: true
+        schema:
+          type: string
+        description: Comma-separated list of lead IDs to delete (e.g., "id1,id2").
+    responses:
+      200:
+        description: Leads deleted successfully.
+      400:
+        description: No lead IDs provided or invalid input.
+      401:
+        description: Unauthorized access.
+      500:
+        description: Internal server error.
+    """
     
     ids = request.args.get("ids")
     if not ids:

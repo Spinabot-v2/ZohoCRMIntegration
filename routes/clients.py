@@ -13,7 +13,29 @@ import json
 @clients_blueprint.route("/<int:remodel_id>/leads", methods=["GET"])  
 @limiter.limit("5 per minute")
 def get_clients(remodel_id):
-    print("Fetching clients...")
+    """
+    Fetch leads from Zoho CRM.
+
+    ---
+    tags:
+      - Leads
+    parameters:
+      - in: path
+        name: remodel_id
+        required: true
+        schema:
+          type: integer
+        description: Remodel ID used to fetch access token and Zoho leads.
+    responses:
+      200:
+        description: Successful fetch of leads.
+      401:
+        description: Unauthorized or token issue.
+      500:
+        description: Internal server error.
+      502:
+        description: Invalid JSON response from Zoho.
+    """
     try:
         token = fetch_tokens(remodel_id)
         if "error" in token:
@@ -36,7 +58,6 @@ def get_clients(remodel_id):
 
     try:
         response = requests.get(url, headers=headers)
-        print(f"Status Code: {response.status_code}")
 
         # Safely try parsing the JSON
         try:

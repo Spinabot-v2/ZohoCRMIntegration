@@ -13,11 +13,10 @@ def create_database_if_not_exists(dbname, user, password, host, port="5432"):
     if not exists:
         try:
             cur.execute(f'CREATE DATABASE "{dbname}";')  # Use double quotes for case sensitivity
-            print(f"Database '{dbname}' created ✅")
         except psycopg2.errors.DuplicateDatabase:
-            print(f"Database '{dbname}' already exists ⚠️")
+            pass
     else:
-        print(f"Database '{dbname}' already exists ✅")
+        pass
 
     cur.close()
     conn.close()

@@ -28,7 +28,6 @@ def insert_creds(remodel_id, access_token, refresh_token,expiration_time):
             )
             db.session.add(new_creds)
         db.session.commit()
-        print(f"Credentials saved for remodel_id: {remodel_id}")
 
 
 def insert_CRM_user(remodel_id , users):
@@ -43,10 +42,9 @@ def insert_CRM_user(remodel_id , users):
                 )
             db.session.add(new_user)
         db.session.commit()
-        print("CRM users for added to clients table")
     else:
-        print("users aldready registered")
-        return "USERS aldready registered"
+        return "USERS already registered"
+
 
 
 #here adding mode - one for creating a
@@ -68,4 +66,3 @@ def insert_audit_data (remodel_id , responses, mode): #repsosne is what you get 
         db.session.add(new_record)
 
     db.session.commit()
-    print(f"{mode} Data Audited")

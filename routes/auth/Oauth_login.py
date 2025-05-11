@@ -16,7 +16,6 @@ ZOHO_ACCOUNTS_URL = "https://accounts.zoho.com"
 def test_creds(remodel_id):
     #check if user creds availabe in credentials table . 
     creds = get_zoho_creds(remodel_id)
-    print(creds,flush=True)
     if creds:
         return "user aldready Authorized"
     #if remodel_id  in database reset delete his tokens and reset.
@@ -66,7 +65,6 @@ def callback():
         try:
             user_data = users.json()
         except Exception:
-            print("⚠️  Invalid response from /users endpoint:", users.text)
             return {"status": "error", "message": "Invalid user response"}
 
         insert_CRM_user(remodel_id, user_data)

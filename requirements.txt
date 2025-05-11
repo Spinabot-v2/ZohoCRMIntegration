@@ -10,3 +10,4 @@ flask-limiter
 alembic 
 pytest
 flasgger
+flask_swagger_ui

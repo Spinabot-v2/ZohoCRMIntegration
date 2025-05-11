@@ -6,7 +6,6 @@ import requests
 
 ZOHO_ACCOUNTS_URL = "https://accounts.zoho.com"
 def refresh_token(remodel_id,refresh_token):
-    print("Refreshing token...")
     if not remodel_id:
         return {"status": "error", "message": "User ID is required"}, 400
     # Fetch the existing credentials from the database

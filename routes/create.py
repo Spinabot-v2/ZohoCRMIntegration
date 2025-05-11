@@ -4,10 +4,84 @@ from token_handler.tokens import fetch_tokens
 from database.insert_data_db import insert_audit_data
 from utils.extension import limiter
 create_blueprint = Blueprint("create", __name__)
-
 @create_blueprint.route("/<int:remodel_id>/leads", methods=["POST"])
 @limiter.limit("5 per minute")
 def create_lead(remodel_id):
+    """
+    Create Leads in Zoho CRM.
+
+    ---
+    tags:
+      - Leads
+    parameters:
+      - in: path
+        name: remodel_id
+        required: true
+        schema:
+          type: integer
+        description: The ID of the remodel project.
+      - in: body
+        name: body
+        required: true
+        description: JSON object containing lead data.
+        schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                example:  # Add the provided sample data here
+                  {
+                    "Annual_Revenue": 1000000,
+                    "City": "New York",
+                    "Company": "Tech Innovators",
+                    "Country": "United States",
+                    "Created_By": {
+                      "email": "developer@spinabot.com",
+                      "id": "6707647000000503001",
+                      "name": "karhteek V"
+                    },
+                    "Created_Time": "2025-04-30T03:45:10-04:00",
+                    "Email": "Bill.gates@example.com",
+                    "First_Name": "BILL",
+                    "Industry": "Technology",
+                    "Last_Name": "Gates",
+                    "Lead_Source": "Cold Call",
+                    "Lead_Status": "New",
+                    "Mobile": "555-555-7777",
+                    "Modified_By": {
+                      "email": "developer@spinabot.com",
+                      "id": "6707647000000503001",
+                      "name": "karhteek V"
+                    },
+                    "Modified_Time": "2025-04-30T03:45:10-04:00",
+                    "No_of_Employees": 500,
+                    "Owner": {
+                      "email": "developer@spinabot.com",
+                      "id": "6707647000000503001",
+                      "name": "karhteek V"
+                    },
+                    "Phone": "555-555-7777",
+                    "Rating": "A",
+                    "Secondary_Email": "bgates@secondary.com",
+                    "Skype_ID": "bgates",
+                    "State": "CA",
+                    "Street": "123 Innovation Blvd",
+                    "Website": "http://www.techinnovators.com",
+                    "Zip_Code": "12345",
+                    "id": "6707647000000665004"
+                  }
+    responses:
+      200:
+        description: Leads created successfully.
+      400:
+        description: Invalid input or missing required fields.
+      401:
+        description: Unauthorized access.
+      500:
+        description: Internal server error.
+    """
     try:
         ZOHO_MODULE = "Leads"
         ZOHO_API_URL = f"https://www.zohoapis.com/crm/v8/{ZOHO_MODULE}"

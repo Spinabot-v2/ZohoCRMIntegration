@@ -16,27 +16,21 @@ import time
 def fetch_tokens(remodel_id):
     try:
         tokens = redis_client.hgetall(f"remodel_id:{remodel_id}#")#check in redis
-        if not tokens:
-            print("CACHE MISS: pulling from DB", flush=True)
         if tokens:
-            print("tokens found in redis",flush=True)
             access_token = tokens[b'access_token'].decode('utf-8')
             refresh_token_value = tokens[b'refresh_token'].decode('utf-8')
             expiration_time = int(tokens[b'expiration_time'].decode('utf-8'))
 
         else:
-            print("Tokens not in cache , fetching from database",flush=True)
             tokens = get_zoho_creds(remodel_id)
             if not tokens:
                 return None
-            print("Database hit for creds",flush=True)
             access_token = tokens.get("access_token")
             refresh_token_value = tokens.get("refresh_token")
             expiration_time = tokens.get("expiration_time")
 
             # Store in Redis with expiry if valid
             if expiration_time > int(time.time()):  # If not expired
-                print("tokens updated in redis")
                 redis_client.hset(f"remodel_id:{remodel_id}#", mapping={
                     "access_token": access_token,
                     "refresh_token": refresh_token_value,

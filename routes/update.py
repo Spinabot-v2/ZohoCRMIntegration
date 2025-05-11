@@ -12,7 +12,68 @@ update_blueprint = Blueprint('update', __name__)
 
 @limiter.limit("5 per minute")
 def update_clients(remodel_id):
-    print("updating_clients")
+    """
+    Update Leads in Zoho CRM.
+
+    ---
+    tags:
+      - Leads
+    parameters:
+      - in: path
+        name: remodel_id
+        required: true
+        schema:
+          type: integer
+        description: The ID of the remodel project.
+      - in: body
+        name: body
+        required: true
+        description: JSON object containing lead data to update.
+        schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "6707647000000775020"
+                  Annual_Revenue:
+                    type: integer
+                    example: 1600000
+                  City:
+                    type: string
+                    example: "Los Angeles Updated"
+                  Company:
+                    type: string
+                    example: "Innovatech Solutions Updated"
+                  Email:
+                    type: string
+                    example: "elon.musk.updated@example.com"
+                  First_Name:
+                    type: string
+                    example: "Elon Updated"
+                  Last_Name:
+                    type: string
+                    example: "Musk Updated"
+                  Phone:
+                    type: string
+                    example: "555-555-9998"
+                  Lead_Status:
+                    type: string
+                    example: "Contacted"
+    responses:
+      200:
+        description: Leads updated successfully.
+      400:
+        description: Invalid input or missing required fields.
+      401:
+        description: Unauthorized access.
+      500:
+        description: Internal server error.
+    """
     try:
         token = fetch_tokens(remodel_id)
         if "error" in token:
@@ -44,9 +105,6 @@ def update_clients(remodel_id):
 
         if response.status_code == 200:
             insert_audit_data(remodel_id,response.json(),mode="update")
-            updates = response.json()["data"]
-            for update in updates:
-                print(type(update["details"]["Created_Time"]))
             return jsonify(res_json), 200
         else:
             return jsonify({"status": "error", "message": "Error updating data", "details": res_json}), response.status_code
