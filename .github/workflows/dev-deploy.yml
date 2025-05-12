@@ -94,7 +94,11 @@ jobs:
             DEV_GUNICORN_BIND:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/DEV_GUNICORN_BIND
             DEV_GUNICORN_WORKER_CLASS:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/DEV_GUNICORN_WORKER_CLASS
             DEV_RATELIMIT_HEADERS_ENABLED:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/DEV_RATELIMIT_HEADERS_ENABLED
-            DEV_DEFAULT_RATELIMIT:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/DEV_DEFAULT_RATELIMIT  
+            DEV_DEFAULT_RATELIMIT:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/DEV_DEFAULT_RATELIMIT            
+            DEV_CACHE_REDIS_USERNAME:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/DEV_CACHE_REDIS_USERNAME
+            DEV_CACHE_REDIS_PASSWORD:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/DEV_CACHE_REDIS_PASSWORD
+            DEV_CACHE_REDIS_HOST:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/DEV_CACHE_REDIS_HOST
+            DEV_CACHE_REDIS_PORT:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/DEV_CACHE_REDIS_PORT
             ZOHO_CLIENT_SECRET:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/ZOHO_CLIENT_SECRET
             ZOHO_CLIENT_ID:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/ZOHO_CLIENT_ID
 
