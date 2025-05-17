@@ -3,6 +3,7 @@ import requests
 from token_handler.tokens import fetch_tokens
 from database.insert_data_db import insert_audit_data
 from utils.extension import limiter
+from routes.zoho_constants import Constants
 create_blueprint = Blueprint("create", __name__)
 @create_blueprint.route("/<int:remodel_id>/leads", methods=["POST"])
 @limiter.limit("5 per minute")
@@ -83,9 +84,7 @@ def create_lead(remodel_id):
         description: Internal server error.
     """
     try:
-        ZOHO_MODULE = "Leads"
-        ZOHO_API_URL = f"https://www.zohoapis.com/crm/v8/{ZOHO_MODULE}"
-
+        zoho_url = Constants.ZOHO_API_URL
         try:
             request_body = request.get_json(force=True)
         except Exception:
@@ -98,14 +97,14 @@ def create_lead(remodel_id):
             return jsonify({"error": "No leads provided"}), 400
 
         try:
-            token = fetch_tokens(remodel_id)
-            if "error" in token:
-                return jsonify(token), 401
-            access_token = token.get("access_token")
+            token_data = fetch_tokens(remodel_id)
+            if "error" in token_data:
+                return jsonify(token_data), 401
+            access_token = token_data.get("access_token")
             if not access_token:
-                return jsonify({"error": "Invalid or missing access token"}), 401
+                return jsonify({"error": "Invalid or missing access token_data"}), 401
         except Exception as e:
-            return jsonify({"error": "Failed to fetch token", "details": str(e)}), 500
+            return jsonify({"error": "Failed to fetch token_data", "details": str(e)}), 500
 
         processed_leads = []
         for lead in leads:
@@ -131,7 +130,7 @@ def create_lead(remodel_id):
         }
 
         try:
-            response = requests.post(ZOHO_API_URL, json=payload, headers=headers)
+            response = requests.post(zoho_url, json=payload, headers=headers)
         except requests.RequestException as e:
             return jsonify({"error": "Request to Zoho failed", "details": str(e)}), 502
 

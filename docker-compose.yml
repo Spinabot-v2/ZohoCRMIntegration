@@ -5,19 +5,7 @@ services:
   app:
     build: 
         context: .
-        target: dev #development compose
     container_name: zohocrm
-    env_file:
-      - .env
-    environment:
-      - ENV=dev
-      - POSTGRES_HOST=${DB_HOST}
-      - POSTGRES_PORT=${DB_PORT}
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASS}
-      - REDIS_HOST=${REDIS_HOST}
-      - ALLOW_ORIGIN=*
     volumes:
       - ./src:/app/src
     depends_on:
@@ -33,12 +21,6 @@ services:
   postgres:
     image: postgres:17.4
     container_name: zohocrm_postgres
-    env_file:
-      - .env
-    environment:
-      - POSTGRES_DB=${DEV_DATABASE_NAME}
-      - POSTGRES_USER=${DEV_DB_USER}
-      - POSTGRES_PASSWORD=${DEV_DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:

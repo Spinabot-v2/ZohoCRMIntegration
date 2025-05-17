@@ -1,15 +1,11 @@
 from flask import Blueprint
-from flask import request, jsonify, redirect
-from database.get_creds_db import get_zoho_creds
-from database.schemas import ZohoCreds
+from flask import  jsonify
 clients_blueprint = Blueprint('clients',__name__)
-from config import Config
 import requests
 from flask import current_app as app
 from token_handler.tokens import fetch_tokens
 from utils.extension import limiter
-from utils.extension import redis_client 
-import json 
+from routes.zoho_constants import Constants
 @clients_blueprint.route("/<int:remodel_id>/leads", methods=["GET"])  
 @limiter.limit("5 per minute")
 def get_clients(remodel_id):
@@ -25,37 +21,29 @@ def get_clients(remodel_id):
         required: true
         schema:
           type: integer
-        description: Remodel ID used to fetch access token and Zoho leads.
+        description: Remodel ID used to fetch access token_data and Zoho leads.
     responses:
       200:
         description: Successful fetch of leads.
       401:
-        description: Unauthorized or token issue.
+        description: Unauthorized or token_data issue.
       500:
         description: Internal server error.
       502:
         description: Invalid JSON response from Zoho.
     """
     try:
-        token = fetch_tokens(remodel_id)
-        if "error" in token:
-            return jsonify(token), 401
-        token = token.get("access_token")
-        if not token:
-            return jsonify({"error": "Access token not found"}), 401
+        token_data = fetch_tokens(remodel_id)
+        if "error" in token_data:
+            return jsonify(token_data), 401
+        token_data = token_data.get("access_token")
+        if not token_data:
+            return jsonify({"error": "Access token_data not found"}), 401
     except Exception as e:
-        return jsonify({"error": "Error while fetching access token", "details": str(e)}), 500
+        return jsonify({"error": "Error while fetching access token_data", "details": str(e)}), 500
 
-    headers = {"Authorization": "Zoho-oauthtoken " + token}
-    url = (
-            "https://www.zohoapis.com/crm/v8/Leads?"
-            "fields=First_Name,Last_Name,Company,Lead_Source,Lead_Status,Industry,"
-            "Annual_Revenue,Phone,Mobile,Email,Secondary_Email,Skype_ID,Website,Rating,"
-            "No_of_Employees,Email_Opt_out,Street,City,State,Zip_Code,Country,Created_By,"
-            "Modified_By,Created_Time,Modified_Time,Owner,Lead_Owner,Twitter,Secondary_URL,"
-            "Address&sort_by=Created_Time&sort_order=desc&per_page=200&page=1"
-    )
-
+    headers = {"Authorization": "Zoho-oauthtoken " + token_data}
+    url = Constants.zoho_get_leads_url # zoho api url for fetching leads
     try:
         response = requests.get(url, headers=headers)
 

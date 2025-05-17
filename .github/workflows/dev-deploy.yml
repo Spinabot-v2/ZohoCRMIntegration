@@ -101,13 +101,13 @@ jobs:
             DEV_CACHE_REDIS_PORT:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/DEV_CACHE_REDIS_PORT
             ZOHO_CLIENT_SECRET:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/ZOHO_CLIENT_SECRET
             ZOHO_CLIENT_ID:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/ZOHO_CLIENT_ID
-
-          # what should be done for these secrets?
-            # CACHE_TYPE:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/CACHE_TYPE
-            # REDIS_HOST:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/REDIS_HOST
-            # REDIS_PORT:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/REDIS_PORT
-            # CACHE_DEFAULT_TIMEOUT:projects/${{secrets.GCP_PROJECT_NUMBER}}/secrets/CACHE_DEFAULT_TIMEOUT
-        
+      - name: Map DEV-prefixed vars to generic names
+        run: |
+          vars=("CONNECTION_NAME" "DATABASE_NAME" "DB_PASSWORD" "DB_USER" "GUNICORN_WORKERS" "GUNICORN_BIND" "GUNICORN_WORKER_CLASS" "RATELIMIT_HEADERS_ENABLED" "DEFAULT_RATELIMIT" "CACHE_REDIS_USERNAME" "CACHE_REDIS_PASSWORD" "CACHE_REDIS_HOST" "CACHE_REDIS_PORT")
+          for var in "${vars[@]}"; do
+            secret_name="DEV_${var}"
+            echo "$var=${!secret_name}" >> $GITHUB_ENV
+          done
 
       # Step 6: Authenticate using Workload Identity Federation for Build and Push
 
@@ -125,7 +125,7 @@ jobs:
         run: gcloud auth configure-docker ${{secrets.GCP_PREFERRED_REGION}}-docker.pkg.dev --quiet
         env:
           CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: ${{ steps.auth-build-push.outputs.credentials_file_path }}
-
+       #install dependencies for application 
       - name: Install Python dependencies
         run: |
           python -m venv venv
@@ -134,10 +134,11 @@ jobs:
           apt-get update && apt-get install -y \
           build-essential libpq-dev gcc netcat-openbsd \
           && rm -rf /var/lib/apt/lists/* 
+
       - name: Run unit tests
         run: |
           source venv/bin/activate
-          pytest 
+          pytest
 
       - name: Make entrypoint.sh executable
         run: chmod +x entrypoint.sh

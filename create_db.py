@@ -18,7 +18,7 @@ with app.app_context():
         TEST_CREDENTIAL = ZohoCreds(
             remodel_id=1,
             access_token="dummy_access_token",
-            refresh_token="1000.77fc73f94beb9b04588e2526402c1164.b189a328a6a1f8962397ec62554819de",  # For refresh only refresh token is required
+            refresh_token="1000.4f3db5728bf104834e81cc9c117ed326.9964fe2adb4fbe7b0aca8c6a29675210",  # For refresh only refresh token is required
             # Set expiration time to a past timestamp to indicate expired
             expiration_time=int(time.time()) - 1000  # Example: 1000 seconds before current time
         )

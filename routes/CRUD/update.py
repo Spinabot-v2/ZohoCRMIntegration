@@ -2,11 +2,12 @@
 from flask import Blueprint 
 from flask import request ,jsonify
 from database.schemas import ZohoCreds
-from routes.clients import clients_blueprint
+from routes.CRUD.clients import clients_blueprint
 from token_handler.tokens import fetch_tokens
 from database.insert_data_db import insert_audit_data
 import requests
 from utils.extension import limiter
+from routes.zoho_constants import Constants
 update_blueprint = Blueprint('update', __name__)
 @clients_blueprint.route("/<int:remodel_id>/leads", methods=["PUT"])
 
@@ -75,20 +76,20 @@ def update_clients(remodel_id):
         description: Internal server error.
     """
     try:
-        token = fetch_tokens(remodel_id)
-        if "error" in token:
-            return jsonify(token), 401
-        access_token = token.get("access_token")
+        token_data = fetch_tokens(remodel_id)
+        if "error" in token_data:
+            return jsonify(token_data), 401
+        access_token = token_data.get("access_token")
         if not access_token:
             return jsonify({"message": "User tokens not found. Please reauthorize."}), 401
     except Exception as e:
-        return jsonify({"error": "Token fetch failed", "details": str(e)}), 500
+        return jsonify({"error": "token_data fetch failed", "details": str(e)}), 500
 
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Zoho-oauthtoken {access_token}"
     }
-    url = "https://www.zohoapis.com/crm/v8/Leads"
+    zoho_url = Constants.ZOHO_API_URL
 
     try:
         try:
@@ -96,7 +97,7 @@ def update_clients(remodel_id):
         except Exception:
             return jsonify({"error": "Invalid JSON body"}), 400
 
-        response = requests.put(url, json=data, headers=headers)
+        response = requests.put(zoho_url, json=data, headers=headers)
 
         try:
             res_json = response.json()
