@@ -12,14 +12,14 @@ auth_blueprint = Blueprint('authorization',__name__)
 ZOHO_REDIRECT_URI="http://localhost:5000/zoho/authorize/callback"
 ZOHO_ACCOUNTS_URL = "https://accounts.zoho.com"
 
-@auth_blueprint.route("/<int:remodel_id>/redirect",methods=["GET"])
-def test_creds(remodel_id):
+@auth_blueprint.route("/<int:entity_id>/redirect",methods=["GET"])
+def creds(entity_id):
     #check if user creds availabe in credentials table . 
-    creds = get_zoho_creds(remodel_id)
+    creds = get_zoho_creds(entity_id)
     if creds:
         return "user aldready Authorized"
-    #if remodel_id  in database reset delete his tokens and reset.
-    session['remodel_id'] = remodel_id
+    #if entity_id  in database reset delete his tokens and reset.
+    session['entity_id'] = entity_id
     auth_url = (
         "https://accounts.zoho.com/oauth/v2/auth"
         "?scope=ZohoCRM.users.ALL,ZohoCRM.modules.ALL"
@@ -32,7 +32,7 @@ def test_creds(remodel_id):
     
 @auth_blueprint.route("/callback")
 def callback():
-    remodel_id = session.get('remodel_id')
+    entity_id = session.get('entity_id')
     code = request.args.get("code")
     accounts_server = request.args.get("accounts-server")
     # Exchange grant code for access token
@@ -56,18 +56,18 @@ def callback():
         expires_in = current_time + expires_in
         # Insert credentials into the database
         insert_creds(
-            remodel_id= remodel_id,
+            entity_id= entity_id,
             access_token=access_token, 
             refresh_token=refresh_token, 
             expiration_time=expires_in, #store in UNIX stamp
         )
-        users = requests.get(f"http://127.0.0.1:5000/api/zoho/{remodel_id}/users")
+        users = requests.get(f"http://127.0.0.1:5000/api/zoho/{entity_id}/users")
         try:
             user_data = users.json()
         except Exception:
             return {"status": "error", "message": "Invalid user response"}
 
-        insert_CRM_user(remodel_id, user_data)
+        insert_CRM_user(entity_id, user_data)
 
         return {"status": "success", "message": "authorization Successful"}
     else:

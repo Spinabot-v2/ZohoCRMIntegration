@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship
 class ZohoCreds(db.Model):
     __tablename__ = 'credentials'
     # Remodel ID as a primary
-    remodel_id = Column(Integer, primary_key=True)  # Unique constraint for remodel_id
+    entity_id = Column(Integer, primary_key=True)  # Unique constraint for entity_id
     access_token = Column(String)
     refresh_token = Column(String)
     expiration_time = Column(Integer)
@@ -20,14 +20,14 @@ class ZohoCreds(db.Model):
 class Clients(db.Model):
     __tablename__ = "clients"
     zoho_id = Column(String, primary_key=True)
-    remodel_id = Column(Integer, ForeignKey("credentials.remodel_id", ondelete="CASCADE"))
+    entity_id = Column(Integer, ForeignKey("credentials.entity_id", ondelete="CASCADE"))
     full_name = Column(String)
 
 class ZohoAudit(db.Model):
     __tablename__ = "audit"
     id = Column(Integer, primary_key=True,autoincrement=True)
     lead_id = Column(String)
-    remodel_id = Column(Integer)
+    entity_id = Column(Integer)
     zoho_id = Column(String, ForeignKey("clients.zoho_id", ondelete="CASCADE"))
     name = Column(String)
     message = Column(String)

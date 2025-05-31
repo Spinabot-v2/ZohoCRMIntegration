@@ -1,5 +1,10 @@
 #!/bin/bash
 # Gunicorn configuration
+DB_PORT=5432
+CACHE_REDIS_PORT=6379
+GUNICORN_WORKERS=4
+GUNICORN_CLASS="sync"
+GUNICORN_HOST="0.0.0.0:5000"
 # Wait for PostgreSQL
 echo "Waiting for PostgreSQL..."
 while ! nc -z postgres "$DB_PORT"; do

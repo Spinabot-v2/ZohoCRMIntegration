@@ -10,10 +10,10 @@ auth_test = Blueprint('auth_login',__name__)
 
 
 
-@auth_test.route("/authorize/<int:remodel_id>",methods=["GET"])
-def test_creds(remodel_id):
+@auth_test.route("/authorize/<int:entity_id>",methods=["GET"])
+def test_creds(entity_id):
     url = "https://accounts.zoho.com/oauth/v2/token"
-    #if remodel_id  in database reset delete his tokens and reset.
+    #if entity_id  in database reset delete his tokens and reset.
 
     # Parameters should be sent as form data in the request body
     data = {
@@ -39,15 +39,15 @@ def test_creds(remodel_id):
         expires_in = current_time + expires_in
         # Insert credentials into the database
         insert_creds(
-            remodel_id,
+            entity_id,
             access_token, 
             refresh_token, 
             expires_in, #store in UNIX stamp
         )
         #if authoriezed then update the clients table  
-        users = requests.get(f"http://127.0.0.1:5000/api/zoho/{remodel_id}/users")
+        users = requests.get(f"http://127.0.0.1:5000/api/zoho/{entity_id}/users")
 
-        insert_CRM_user(remodel_id , users.json())
+        insert_CRM_user(entity_id , users.json())
         return {"status": "success", "data": response.json()}
     else:
         return {"status": "error", "message": response.text}, response.status_code

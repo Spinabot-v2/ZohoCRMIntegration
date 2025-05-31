@@ -5,12 +5,12 @@ from token_handler.tokens import fetch_tokens
 meta_blueprint = Blueprint("metadata",__name__)
 
 
-@meta_blueprint.route("/<int:remodel_id>/leads/meta",methods = ['GET'])
-def meta_data(remodel_id):
+@meta_blueprint.route("/<int:entity_id>/leads/meta",methods = ['GET'])
+def meta_data(entity_id):
     module = request.args.get('module', 'Leads')  # Default to 'Leads' if not provided
     type = request.args.get('type', 'all')  # Default to 'all' if not provided
     url = "https://www.zohoapis.com/crm/v8/settings/fields"
-    token = fetch_tokens(remodel_id)
+    token = fetch_tokens(entity_id)
     params = {
         "module": module,
         "type": type

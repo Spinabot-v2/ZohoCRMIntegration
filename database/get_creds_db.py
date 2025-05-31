@@ -3,10 +3,10 @@ from database.schemas import ZohoCreds
 from token_handler.refresh_tokens import refresh_token
 from datetime import datetime, timezone
 from flask import current_app as app
-def get_zoho_creds(remodel_id: int) -> dict | None:
+def get_zoho_creds(entity_id: int) -> dict | None:
     """Fetches the latest Zoho credentials from the database and returns them as a dictionary."""
     try:
-        creds = db.session.query(ZohoCreds).filter_by(remodel_id=remodel_id).first()
+        creds = db.session.query(ZohoCreds).filter_by(entity_id=entity_id).first()
         if creds is None:
             return None
         return {

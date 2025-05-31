@@ -1,7 +1,6 @@
 {
     "data": [
         {
-            "id": "6707647000000746002",  
             "Annual_Revenue": 1600000,
             "City": "Los Angeles Updated",
             "Company": "Innovatech Solutions Updated",
@@ -12,7 +11,6 @@
             "Lead_Status": "Contacted"
         },
         {
-            "id": "6707647000000746001",  
             "Annual_Revenue": 1900000,
             "City": "Chicago Updated",
             "Company": "EcoGreen Technologies Updated",

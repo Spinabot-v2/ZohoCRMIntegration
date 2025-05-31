@@ -6,11 +6,11 @@ from utils.extension import limiter
 zoho_users_blueprint = Blueprint("zoho_users",__name__)
 
 
-@zoho_users_blueprint.route("/<int:remodel_id>/users")
+@zoho_users_blueprint.route("/<int:entity_id>/users")
 @limiter.limit("3 per minute")
-def get_user(remodel_id):
+def get_user(entity_id):
     print("fetching Users")
-    token = fetch_tokens(remodel_id)
+    token = fetch_tokens(entity_id)
     access_token = token["access_token"]
     print(access_token)
     url = "https://www.zohoapis.com/crm/v8/users?type=AdminUsers"
